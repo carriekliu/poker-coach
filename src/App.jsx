@@ -1,27 +1,24 @@
 import { useState } from 'react';
 import { SetupScreen } from './screens/SetupScreen.jsx';
+import { TableScreen } from './screens/TableScreen.jsx';
 import { HandRankingsTrigger } from './components/HandRankings.jsx';
 
 function App() {
   const [gameConfig, setGameConfig] = useState(null);
-  // board will be an array of card integers once the game screen is built.
-  // Passing undefined here means the rankings sheet shows all hands as reachable.
-  const [board] = useState(null);
+  const [boardCards, setBoardCards] = useState([]);
 
   return (
     <>
       {!gameConfig ? (
-        <SetupScreen onStart={setGameConfig} />
+        <SetupScreen onStart={(cfg) => { setGameConfig(cfg); setBoardCards([]); }} />
       ) : (
-        <div style={{ padding: '2rem', textAlign: 'center' }}>
-          <p>
-            {gameConfig.players} players · {gameConfig.smallBlind}/{gameConfig.bigBlind} blinds ·{' '}
-            {gameConfig.startingStack.toLocaleString()} starting stack
-          </p>
-          <button onClick={() => setGameConfig(null)}>← Back to setup</button>
-        </div>
+        <TableScreen
+          config={gameConfig}
+          onBack={() => setGameConfig(null)}
+        />
       )}
-      <HandRankingsTrigger board={board} />
+      {/* Hand rankings trigger sits above all screens; board prop enables impossible-hand greying */}
+      <HandRankingsTrigger board={boardCards} />
     </>
   );
 }

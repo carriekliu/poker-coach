@@ -1,0 +1,431 @@
+/* ── Screen shell ────────────────────────────────────────────── */
+
+.table-screen {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: #0d0d0d;
+  color: #f3f4f6;
+  position: relative;
+}
+
+/* ── Felt ────────────────────────────────────────────────────── */
+
+.felt {
+  position: relative;
+  width: 100%;
+  /* Slightly taller than a square to give room at top and bottom */
+  aspect-ratio: 1 / 1.08;
+  max-height: 55svh;
+  background: radial-gradient(ellipse 80% 70% at 50% 50%, #1a5c35 0%, #0f3d22 100%);
+  border-radius: 0 0 48% 48% / 0 0 20% 20%;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* Seat anchor — the [left,top] point, with circle centred on it */
+.seat-anchor {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+/* ── Seat circle ─────────────────────────────────────────────── */
+
+.seat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The circle itself — drawn with the .seat__cards wrapper */
+.seat__cards {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #1f2937;
+  border: 2px solid #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.seat--hero .seat__cards {
+  width: 58px;
+  height: 58px;
+  background: #1e1b4b;
+  border-color: #4f46e5;
+}
+
+.seat--active .seat__cards {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.35);
+  animation: seat-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes seat-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(245,158,11,0.35); }
+  50%       { box-shadow: 0 0 0 6px rgba(245,158,11,0.15); }
+}
+
+.seat--folded .seat__cards {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+/* Tap hint inside hero circle before cards are set */
+.seat__tap-hint {
+  font-size: 9px;
+  color: #9ca3af;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.seat__cards--back {
+  gap: 1px;
+}
+
+/* Seat info (stack / bet) below circle */
+.seat__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 52px;
+}
+
+.seat__stack {
+  font-size: 11px;
+  font-weight: 600;
+  color: #d1d5db;
+  line-height: 1;
+}
+
+.seat__bet {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fbbf24;
+  line-height: 1;
+  background: rgba(251,191,36,0.12);
+  border-radius: 8px;
+  padding: 1px 5px;
+}
+
+/* Position badges (D / SB / BB) */
+.seat-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 8px;
+  font-weight: 800;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  z-index: 1;
+}
+
+.badge--dealer {
+  background: #f59e0b;
+  color: #000;
+}
+
+.badge--blind {
+  background: #6d28d9;
+  color: #fff;
+  font-size: 7px;
+  width: 18px;
+  border-radius: 10px;
+}
+
+/* ── Mini playing card ───────────────────────────────────────── */
+
+.mini-card {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  width: 22px;
+  height: 30px;
+  border-radius: 3px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+}
+
+.mini-card--red   { color: #c0252e; }
+.mini-card--black { color: #111; }
+
+.mini-card--back {
+  background: repeating-linear-gradient(
+    45deg, #1e3a8a 0px, #1e3a8a 3px, #1d4ed8 3px, #1d4ed8 6px
+  );
+}
+
+/* ── Felt centre ─────────────────────────────────────────────── */
+
+.felt__centre {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.felt__centre > * {
+  pointer-events: auto;
+}
+
+.felt__pot {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fbbf24;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.felt__street {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+}
+
+.felt__over {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fbbf24;
+  text-align: center;
+  padding: 4px 10px;
+  background: rgba(0,0,0,0.45);
+  border-radius: 8px;
+}
+
+/* ── Board strip ─────────────────────────────────────────────── */
+
+.board-strip {
+  display: flex;
+  gap: 4px;
+  background: rgba(0,0,0,0.3);
+  border: 1px dashed rgba(255,255,255,0.18);
+  border-radius: 8px;
+  padding: 5px 6px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.board-slot-empty {
+  width: 22px;
+  height: 30px;
+  border-radius: 3px;
+  border: 1px dashed rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ── Deal / next-board button (felt overlay) ─────────────────── */
+
+.deal-btn--board {
+  font-size: 11px;
+  padding: 5px 14px;
+  height: auto;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* ── Action area ─────────────────────────────────────────────── */
+
+.action-area {
+  background: #111827;
+  padding: 12px 16px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #1f2937;
+}
+
+/* Deal / Next hand button */
+.deal-btn {
+  width: 100%;
+  height: 52px;
+  font-size: 17px;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  background: var(--accent, #aa3bff);
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):active { opacity: 0.85; }
+}
+
+/* Action buttons: fold / call / raise */
+.action-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-whose {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.action-row {
+  display: flex;
+  gap: 8px;
+}
+
+.act-btn {
+  flex: 1;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active { opacity: 0.8; }
+}
+
+.act-btn--fold  { background: #374151; color: #d1d5db; flex: 0.7; }
+.act-btn--call  { background: #065f46; color: #6ee7b7; flex: 1.2; }
+.act-btn--raise { background: #7c3aed; color: #fff; }
+
+/* Raise panel */
+.raise-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.raise-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.raise-panel__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.raise-panel__total {
+  font-size: 22px;
+  font-weight: 800;
+  color: #f3f4f6;
+  flex: 1;
+  letter-spacing: -0.5px;
+}
+
+.raise-panel__clear {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.raise-panel__cancel {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #374151;
+  color: #9ca3af;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+/* Chip buttons */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip-btn {
+  min-width: 52px;
+  height: 44px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 22px;
+  background: #1f2937;
+  color: #f3f4f6;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  border: 1px solid #374151;
+
+  &:active { background: #374151; }
+}
+
+/* ── Back button ─────────────────────────────────────────────── */
+
+.table-back-btn {
+  position: fixed;
+  top: max(12px, calc(env(safe-area-inset-top, 0px) + 12px));
+  left: max(12px, calc(env(safe-area-inset-left, 0px) + 12px));
+  z-index: 40;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  backdrop-filter: blur(6px);
+  -webkit-tap-highlight-color: transparent;
+
+  &:active { opacity: 0.7; }
+}

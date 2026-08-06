@@ -1,0 +1,157 @@
+.coach-panel {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.coach__row {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+}
+
+.coach__row:last-child {
+  border-bottom: none;
+}
+
+/* Equity row */
+.coach__row--equity {
+  flex-direction: column;
+  gap: 3px;
+}
+
+.coach__eq-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.coach__verdict {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.coach__verdict--good  { background: #dcfce7; color: #166534; }
+.coach__verdict--ok    { background: #e0f2fe; color: #075985; }
+.coach__verdict--warn  { background: #fef3c7; color: #92400e; }
+.coach__verdict--bad   { background: #fee2e2; color: #991b1b; }
+
+@media (prefers-color-scheme: dark) {
+  .coach__verdict--good  { background: rgba(20,83,45,.5); color: #86efac; }
+  .coach__verdict--ok    { background: rgba(7,89,133,.5); color: #7dd3fc; }
+  .coach__verdict--warn  { background: rgba(69,26,3,.5);  color: #fde68a; }
+  .coach__verdict--bad   { background: rgba(69,10,10,.5); color: #fca5a5; }
+}
+
+.coach__eq-pct {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-h);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.coach__eq-breakdown {
+  font-size: 12px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.coach__odds {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 0;
+}
+
+.coach__odds--good { color: #166534; }
+.coach__odds--bad  { color: #991b1b; }
+
+@media (prefers-color-scheme: dark) {
+  .coach__odds--good { color: #86efac; }
+  .coach__odds--bad  { color: #fca5a5; }
+}
+
+/* Outs row */
+.coach__row--outs {
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.coach__label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.coach__outs-num {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-h);
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.coach__outs-detail {
+  font-size: 12px;
+  color: var(--text);
+}
+
+.coach__outs-breakdown {
+  width: 100%;
+  font-size: 12px;
+  color: var(--text);
+  padding-left: 42px; /* align under label area */
+}
+
+/* Nuts row */
+.coach__row--nuts {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px 10px;
+}
+
+.coach__nuts-cards {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-h);
+  letter-spacing: 0.5px;
+}
+
+.coach__nuts-name {
+  font-size: 13px;
+  color: var(--text);
+  font-style: italic;
+}
+
+/* Board warnings row */
+.coach__row--board {
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 16px;
+}
+
+.coach__warning {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.coach__warning-name {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.coach__warning-reason {
+  color: var(--text);
+}
