@@ -1,0 +1,450 @@
+/* ── Shell ───────────────────────────────────────────────────────── */
+
+.intro-shell {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: #f4f3f8;
+  overflow: hidden;
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .intro-shell { background: #0d0e14; }
+}
+
+/* ── Skip button ─────────────────────────────────────────────────── */
+
+.intro-skip {
+  position: absolute;
+  top: max(16px, calc(env(safe-area-inset-top, 0px) + 16px));
+  right: 16px;
+  z-index: 10;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active { opacity: 0.6; }
+}
+
+/* ── Swipe area ──────────────────────────────────────────────────── */
+
+.intro-slider {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  touch-action: pan-y;
+}
+
+.intro-track {
+  display: flex;
+  width: 400vw;
+  height: 100%;
+  will-change: transform;
+}
+
+.intro-slide {
+  width: 100vw;
+  flex-shrink: 0;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px 16px;
+  box-sizing: border-box;
+}
+
+/* ── Card (content area) ─────────────────────────────────────────── */
+
+.icard {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.icard__icon {
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 18px;
+}
+
+.icard__title {
+  margin: 0 0 16px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-h);
+  text-align: center;
+}
+
+.icard__body {
+  width: 100%;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-h);
+  text-align: left;
+
+  p { margin: 0; }
+}
+
+.icard__spacer { margin-top: 14px !important; }
+
+.icard__highlight {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 15px;
+  color: var(--accent);
+}
+
+/* ── Card 0: depth selector ──────────────────────────────────────── */
+
+.icard__options {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.icard__opt {
+  width: 100%;
+  height: 56px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-h);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:active { opacity: 0.7; }
+}
+
+.icard__opt--sel {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+/* ── Card 2: timeline (beginner) ─────────────────────────────────── */
+
+.icard--scroll {
+  align-items: flex-start;
+}
+
+.icard--scroll .icard__title {
+  text-align: left;
+}
+
+.icard__timeline {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.icard__timeline::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.icard__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 7px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.icard__step::before {
+  content: '';
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.icard__step--bet::before {
+  background: var(--border);
+  border-color: var(--border);
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  margin-top: 9px;
+  border-radius: 50%;
+}
+
+.icard__step--bet .icard__step-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding-top: 8px;
+}
+
+.icard__step-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-h);
+  padding-top: 4px;
+  line-height: 1.2;
+}
+
+.icard__step-desc {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.icard__step-label-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Card 2: compact flow (experienced) ─────────────────────────── */
+
+.icard__compact-flow {
+  width: 100%;
+  font-size: 15px;
+  line-height: 2.0;
+  color: var(--text-h);
+  margin-top: 4px;
+}
+
+.icard__pill {
+  display: inline-block;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.icard__arrow {
+  color: var(--text);
+  font-size: 12px;
+}
+
+/* ── Card 3: feature list ────────────────────────────────────────── */
+
+.icard__features {
+  width: 100%;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.icard__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.icard__feat-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.icard__feat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 4px;
+
+  strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-h);
+    display: block;
+  }
+
+  span {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+}
+
+/* Mini card graphics in Card 3 */
+.feat-cards {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.feat-card {
+  width: 20px;
+  height: 27px;
+  border-radius: 3px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  font-size: 8px;
+  font-weight: 800;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-align: center;
+}
+
+.feat-card--back {
+  background: repeating-linear-gradient(
+    45deg, #1e3a8a 0px, #1e3a8a 2px, #1d4ed8 2px, #1d4ed8 4px
+  );
+  border-color: transparent;
+}
+
+.feat-tap {
+  font-size: 24px;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.feat-pct {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -1px;
+}
+
+/* ── Progress dots ───────────────────────────────────────────────── */
+
+.intro-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 10px 0 8px;
+  flex-shrink: 0;
+}
+
+.intro-dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 4px;
+  border: none;
+  background: var(--border);
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.2s, background-color 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.intro-dot--on {
+  width: 24px;
+  background: var(--accent);
+}
+
+/* ── Nav bar ─────────────────────────────────────────────────────── */
+
+.intro-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 20px max(20px, calc(env(safe-area-inset-bottom, 0px) + 14px));
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.intro-nav-hint {
+  font-size: 12px;
+  color: var(--text);
+  text-align: center;
+  flex: 1;
+}
+
+.intro-nav-btn {
+  height: 44px;
+  min-width: 70px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+
+  &:active { opacity: 0.7; }
+}
+
+.intro-nav-btn--back {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-h);
+}
+
+.intro-nav-btn--next {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+
+.intro-nav-btn--cta {
+  background: var(--accent);
+  color: #fff;
+  min-width: 110px;
+}
+
+/* ── Timeline step: label + desc wrapper ─────────────────────────── */
+
+.icard__step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 3px;
+}

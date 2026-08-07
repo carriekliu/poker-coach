@@ -18,7 +18,7 @@ function canMakeAmount(amount, denomValues) {
 
 let _nextId = 4;
 
-export function SetupScreen({ onStart }) {
+export function SetupScreen({ onStart, onShowIntro }) {
   const [players, setPlayers] = useState(6);
   const [smallBlind, setSmallBlind] = useState('1');
   const [bigBlind, setBigBlind] = useState('2');
@@ -214,6 +214,12 @@ export function SetupScreen({ onStart }) {
         <button type="submit" className="start-btn" disabled={!canSubmit}>
           Start Session
         </button>
+
+        {onShowIntro && (
+          <button type="button" className="setup-intro-link" onClick={onShowIntro}>
+            Reopen intro guide
+          </button>
+        )}
       </form>
     </div>
   );
