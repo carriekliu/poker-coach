@@ -18,6 +18,8 @@ function canMakeAmount(amount, denomValues) {
 
 let _nextId = 4;
 
+const CALLOUT_KEY = 'pokerCoach.calloutsSeen';
+
 export function SetupScreen({ onStart, onShowIntro }) {
   const [players, setPlayers] = useState(6);
   const [smallBlind, setSmallBlind] = useState('1');
@@ -220,6 +222,14 @@ export function SetupScreen({ onStart, onShowIntro }) {
             Reopen intro guide
           </button>
         )}
+
+        <button
+          type="button"
+          className="setup-reset-link"
+          onClick={() => localStorage.removeItem(CALLOUT_KEY)}
+        >
+          Reset tutorial hints
+        </button>
       </form>
     </div>
   );

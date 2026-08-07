@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { CardPicker } from '../components/CardPicker.jsx';
 import { CoachPanel } from '../components/CoachPanel.jsx';
 import { street } from '../engine/board.js';
@@ -59,6 +59,64 @@ function ChipBtn({ value, onClick }) {
   );
 }
 
+// ── Tutorial callouts ─────────────────────────────────────────────
+const CALLOUT_KEY = 'pokerCoach.calloutsSeen';
+function loadSeenCallouts() {
+  try { return JSON.parse(localStorage.getItem(CALLOUT_KEY) ?? '{}'); }
+  catch { return {}; }
+}
+
+const CALLOUT_CONFIG = {
+  cards: {
+    sel: '.seat--hero .seat__cards',
+    placement: 'above',
+    text: 'Tap your circle at the bottom to log your hole cards.',
+  },
+  cheatSheet: {
+    sel: '.hr-trigger',
+    placement: 'below',
+    text: 'Tap the card icon any time to look up hand rankings.',
+  },
+  actions: {
+    sel: '.action-row',
+    placement: 'above',
+    text: 'Fold, Call, or Raise. Tap a player circle to correct who acts next.',
+  },
+};
+
+function Callout({ text, anchor, placement, onDismiss }) {
+  if (!anchor) return null;
+
+  const W = 214;
+  const ARROW = 10;
+  const GAP = 6;
+  const H_EST = 86;
+  const PAD = 12;
+  const vw = window.innerWidth;
+
+  const cx   = anchor.left + anchor.width / 2;
+  const left = Math.max(PAD, Math.min(cx - W / 2, vw - W - PAD));
+  const arrowX = Math.max(16, Math.min(cx - left, W - 16));
+  const top  = placement === 'above'
+    ? anchor.top  - ARROW - GAP - H_EST
+    : anchor.bottom + ARROW + GAP;
+
+  return (
+    <>
+      <div className="callout-backdrop" onClick={onDismiss} aria-hidden="true" />
+      <div
+        className={`callout callout--${placement === 'above' ? 'bottom' : 'top'}`}
+        style={{ left, top, '--arrow-x': `${arrowX}px` }}
+        onClick={onDismiss}
+        role="tooltip"
+      >
+        <p className="callout__text">{text}</p>
+        <span className="callout__dismiss">Tap to dismiss</span>
+      </div>
+    </>
+  );
+}
+
 // ── Seat circle ───────────────────────────────────────────────────────────
 function SeatCircle({ seat, isHero, isActive, isFolded, isDealer, isSB, isBB, stack, bet, holeCards, onClick }) {
   const badges = [];
@@ -79,12 +137,12 @@ function SeatCircle({ seat, isHero, isActive, isFolded, isDealer, isSB, isBB, st
       aria-label={isHero ? 'Hero' : `Player ${seat + 1}`}
     >
       {/* Cards */}
-      {isHero && holeCards.length === 2 ? (
+      {isHero ? (
         <div className="seat__cards">
-          {holeCards.map((c) => <MiniCard key={c} card={c} />)}
+          {holeCards.length === 2
+            ? holeCards.map((c) => <MiniCard key={c} card={c} />)
+            : <span className="seat__tap-hint">tap to<br />enter cards</span>}
         </div>
-      ) : isHero ? (
-        <span className="seat__tap-hint">tap to<br />enter cards</span>
       ) : (
         <div className="seat__cards seat__cards--back">
           <CardBack /><CardBack />
@@ -106,15 +164,16 @@ function SeatCircle({ seat, isHero, isActive, isFolded, isDealer, isSB, isBB, st
 }
 
 // ── Board cards strip ─────────────────────────────────────────────────────
-function BoardStrip({ cards, onTap }) {
-  const slots = Array.from({ length: 5 }, (_, i) => cards[i] ?? null);
+function BoardStrip({ cards, onTap, needsInput }) {
   return (
     <button className="board-strip" onClick={onTap} type="button" aria-label="Edit board cards">
-      {slots.map((card, i) => (
-        card !== null
-          ? <MiniCard key={i} card={card} />
-          : <div key={i} className="board-slot-empty" />
-      ))}
+      {cards.map((card, i) => <MiniCard key={i} card={card} />)}
+      {cards.length === 0 && needsInput
+        ? <span className="board-strip__hint">tap to enter board</span>
+        : Array.from({ length: 5 - cards.length }, (_, i) => (
+            <div key={`e${i}`} className="board-slot-empty" />
+          ))
+      }
     </button>
   );
 }
@@ -144,6 +203,10 @@ export function TableScreen({ config, onBack }) {
   const [raiseAmount, setRaiseAmount] = useState(0);
   const [picker, setPicker] = useState(null); // null | { mode, label, max, blocked, initial }
 
+  // ── Tutorial callouts ──
+  const [seenCallouts, setSeenCallouts] = useState(loadSeenCallouts);
+  const [calloutAnchor, setCalloutAnchor] = useState(null);
+
   // ── Derived ──────────────────────────────────────────────────────────────
   const sbSeat = (dealerSeat + 1) % N;
   const bbSeat = (dealerSeat + 2) % N;
@@ -164,6 +227,33 @@ export function TableScreen({ config, onBack }) {
 
   // Hero's cost to call
   const heroToCall = Math.max(0, toCall - bets[0]);
+
+  // ── Render flags needed for callout sequencing ────────────────────────────
+  const showActionsForCallout = handActive && actionQueue.length > 0;
+
+  const activeCallout =
+    (!seenCallouts.cards && handActive)                                      ? 'cards' :
+    (!seenCallouts.cheatSheet && seenCallouts.cards)                         ? 'cheatSheet' :
+    (!seenCallouts.actions && seenCallouts.cheatSheet && showActionsForCallout) ? 'actions' :
+    null;
+
+  function dismissCallout(which) {
+    const next = { ...seenCallouts, [which]: true };
+    setSeenCallouts(next);
+    localStorage.setItem(CALLOUT_KEY, JSON.stringify(next));
+  }
+
+  useEffect(() => {
+    if (!activeCallout) { setCalloutAnchor(null); return; }
+    const cfg = CALLOUT_CONFIG[activeCallout];
+    function measure() {
+      const el = document.querySelector(cfg.sel);
+      if (el) setCalloutAnchor(el.getBoundingClientRect());
+    }
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [activeCallout]);
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   function advance(newFolded, newBets, newToCall, newPot, currentQueue) {
@@ -339,6 +429,7 @@ export function TableScreen({ config, onBack }) {
           </div>
           <BoardStrip
             cards={boardCards}
+            needsInput={needsBoard}
             onTap={() => {
               if (!handActive) return;
               if (needsBoard) openBoardPicker(nextCardMode);
@@ -439,6 +530,16 @@ export function TableScreen({ config, onBack }) {
           initial={picker.initial}
           onConfirm={handlePickerConfirm}
           onClose={() => setPicker(null)}
+        />
+      )}
+
+      {/* Tutorial callout */}
+      {activeCallout && (
+        <Callout
+          text={CALLOUT_CONFIG[activeCallout].text}
+          anchor={calloutAnchor}
+          placement={CALLOUT_CONFIG[activeCallout].placement}
+          onDismiss={() => dismissCallout(activeCallout)}
         />
       )}
 
